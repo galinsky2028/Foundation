@@ -1,6 +1,6 @@
 # Foundation
 
-The shared base for every Galinsky Labs, Galinsky Arts, Galinsky 2028 and Justice For All project. A new project is a copy of this repository with its own code added under `app/`. Everything a web application needs before its first feature is already here and tested.
+The shared base for every project. A new project is a copy of this repository with its own code added under `app/`. Everything a web application needs before its first feature is already here and tested.
 
 ## What every project gets
 
