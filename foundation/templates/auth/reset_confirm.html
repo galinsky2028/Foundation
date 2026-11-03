@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card narrow">
+  <h1>Choose a new password</h1>
+  {% if error %}<p class="notice warn">{{ error }}</p>{% endif %}
+  <form method="post" action="/reset/{{ token }}">
+    {{ csrf_field(request) }}
+    <label>New password (at least 10 characters) <input type="password" name="password" autocomplete="new-password" required minlength="10"></label>
+    <button class="btn primary" type="submit">Save password</button>
+  </form>
+</section>
+{% endblock %}

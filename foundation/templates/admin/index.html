@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Admin · {{ settings.app_name }}{% endblock %}
+{% block content %}
+<h1>Administration</h1>
+
+<section class="card" id="users">
+  <h2>Users ({{ users|length }})</h2>
+  {% if invite_link %}<p class="notice ok">Invitation sent. You can also share this link directly; it works for seven days and only once:<br><code class="wrap">{{ invite_link }}</code></p>{% endif %}
+  <table>
+    <tr><th>Email</th><th>Name</th><th>Role</th><th>Active</th><th>Last sign-in</th><th></th></tr>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.email }}</td><td>{{ u.name }}</td>
+      <td><select name="role" form="user{{ u.id }}">{% for r in roles %}<option {% if u.role == r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></td>
+      <td><input type="checkbox" name="active" value="1" form="user{{ u.id }}" {% if u.active %}checked{% endif %}></td>
+      <td><small>{{ u.last_login_at.strftime('%Y-%m-%d %H:%M') if u.last_login_at else '—' }}</small></td>
+      <td><form method="post" action="/admin/users/{{ u.id }}" id="user{{ u.id }}">{{ csrf_field(request) }}<button class="btn small" type="submit">Save</button></form></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <h3>Invite someone</h3>
+  <form method="post" action="/admin/invite" class="row">
+    {{ csrf_field(request) }}
+    <label>Email <input type="email" name="email" required></label>
+    <label>Role <select name="role">{% for r in roles %}<option>{{ r }}</option>{% endfor %}</select></label>
+    <button class="btn" type="submit">Send invitation</button>
+  </form>
+</section>
+
+<section class="card" id="keys">
+  <h2>API keys</h2>
+  <p class="muted">Keys let another service call this one's API. Give each calling service its own key with only the scopes it needs.</p>
+  {% if new_key %}<p class="notice ok">Copy this key now; it will not be shown again:<br><code class="wrap">{{ new_key }}</code></p>{% endif %}
+  <table>
+    <tr><th>Name</th><th>Prefix</th><th>Scopes</th><th>Last used</th><th></th></tr>
+    {% for k in keys %}
+    <tr {% if k.revoked_at %}class="muted"{% endif %}>
+      <td>{{ k.name }}</td><td><code>fk_{{ k.prefix }}_…</code></td><td>{{ (k.scopes or [])|join(', ') }}</td>
+      <td><small>{{ k.last_used_at.strftime('%Y-%m-%d %H:%M') if k.last_used_at else 'never' }}</small></td>
+      <td>{% if k.revoked_at %}revoked{% else %}<form method="post" action="/admin/keys/{{ k.id }}/revoke" data-confirm="Revoke {{ k.name }}?">{{ csrf_field(request) }}<button class="btn small danger">Revoke</button></form>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <form method="post" action="/admin/keys" class="row">
+    {{ csrf_field(request) }}
+    <label>Name <input name="name" placeholder="e.g. compliance app" required></label>
+    <label>Scopes (comma-separated; * for all) <input name="scopes" value="*"></label>
+    <button class="btn" type="submit">Create key</button>
+  </form>
+</section>
+
+<section class="card" id="jobs">
+  <h2>Background jobs</h2>
+  <p class="muted">{% for k, v in job_counts.items() %}{{ k }}: {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}{% if not job_counts %}No jobs yet.{% endif %} · AI spend this month: ${{ "%.2f"|format(spend) }}</p>
+  <table>{% for j in jobs %}<tr><td>#{{ j.id }}</td><td>{{ j.kind }}</td><td><span class="chip {{ j.status }}">{{ j.status }}</span></td><td><small>{{ j.created_at.strftime('%Y-%m-%d %H:%M') }}</small></td><td><small>{{ (j.error or '').split('\n')[0] }}</small></td></tr>{% endfor %}</table>
+</section>
+
+<section class="card" id="audit">
+  <h2>Audit log (latest 100)</h2>
+  <table>{% for e in events %}<tr><td><small>{{ e.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small></td><td>{{ e.action }}</td><td>{{ e.target }}</td><td><small>{{ e.detail or '' }}</small></td></tr>{% endfor %}</table>
+</section>
+{% endblock %}

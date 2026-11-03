@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1>{{ settings.app_name }}</h1>
+  {% if settings.app_tagline %}<p class="muted">{{ settings.app_tagline }}</p>{% endif %}
+  <p>This is the starting page of a new Foundation project. Replace app/templates/home.html with the project's front page.</p>
+</section>
+{% endblock %}

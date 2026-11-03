@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Your account · {{ settings.app_name }}{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Your account</h1>
+  {% if saved %}<p class="notice ok">Saved.</p>{% endif %}
+  {% if error %}<p class="notice warn">{{ error }}</p>{% endif %}
+  <p class="muted">{{ user.email }} · {{ user.role }}</p>
+  <form method="post" action="/account">
+    {{ csrf_field(request) }}
+    <label>Name <input name="name" value="{{ user.name }}"></label>
+    <h2>Change password</h2>
+    <label>Current password <input type="password" name="current_password" autocomplete="current-password"></label>
+    <label>New password <input type="password" name="new_password" autocomplete="new-password" minlength="10"></label>
+    <button class="btn primary" type="submit">Save</button>
+  </form>
+</section>
+{% endblock %}

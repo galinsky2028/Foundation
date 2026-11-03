@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome, {{ user.name or user.email }}</h1>
+<section class="card"><p>This is the signed-in starting page. Replace app/templates/dashboard.html with the project's dashboard.</p></section>
+{% endblock %}

@@ -1,0 +1,8 @@
+[project]
+name = "foundation"
+version = "1.0.0"
+description = "Shared foundation for Galinsky Labs, Galinsky Arts, Galinsky 2028 and Justice For All projects."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

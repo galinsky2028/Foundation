@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>{% block title %}{{ settings.app_name }}{% endblock %}</title>
+<link rel="stylesheet" href="/static/foundation.css">
+<style>:root { --brand: {{ settings.brand_color }}; }</style>
+{% block head %}{% endblock %}
+<script src="/static/foundation.js" defer></script>
+</head>
+<body>
+{% set me = current_user(request) %}
+<header class="top">
+  <a class="brand" href="/">{{ settings.app_name }}</a>
+  <nav>
+    {% block nav %}{% endblock %}
+    {% if me %}
+      <a href="/app">Dashboard</a>
+      {% if me.role == 'admin' %}<a href="/admin">Admin</a>{% endif %}
+      <a href="/account">{{ me.name or me.email }}</a>
+      <form method="post" action="/logout" class="inline">{{ csrf_field(request) }}<button class="link" type="submit">Sign out</button></form>
+    {% else %}
+      <a href="/login">Sign in</a>
+    {% endif %}
+  </nav>
+</header>
+<main>{% block content %}{% endblock %}</main>
+<footer>
+  {% block footer %}<p>{{ settings.app_name }}{% if settings.organization %} · {{ settings.organization }}{% endif %}</p>{% endblock %}
+</footer>
+</body>
+</html>
